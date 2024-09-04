@@ -1,0 +1,51 @@
+{% extends 'layout/base_fullscreen.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <form method="post" class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="card-title">Customer Login</h4>
+                </div>
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="username" id="username"
+                            placeholder="Raju Srivastava" />
+                        <label for="username">Username</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password" />
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <a href="{%provider_login_url 'github' %}" class="btn btn-dark btn-block">
+                            <i class ="fab fa-github mt-2"></i>login with github</a>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+    main{
+        display: grid;
+        place-items: center;
+        height: 100vh;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+<script></script>
+{% endblock %}
