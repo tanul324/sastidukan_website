@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'allauth',
     'django_browser_reload',
     'allauth.account',
@@ -149,3 +150,10 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+import os     
+from dotenv import load_dotenv
+
+load_dotenv()
+RAZOR_KEY_ID = os.getenv('RAZOR_KEY_ID')
+RAZOR_KEY_SECRET=os.getenv('RAZOR_KEY_SECRET')

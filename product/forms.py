@@ -4,7 +4,7 @@ from .models import Product , Category,Review
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['category','image','title','discription','price','brand']
+        fields = ['category','image','title','description','price','brand']
         
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -14,4 +14,10 @@ class CategoryForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['content','rating']
+        
+        fields = ['content', 'rating']
+
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+            'rating': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5, 'step': 1}),
+        }

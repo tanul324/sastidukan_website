@@ -1,14 +1,14 @@
 from django.contrib import admin
-from .models import cart,cartitem,order
+from .models import Cart,Cartitem,Order
 
 # Register your models here.
-@admin.register(cart)
+@admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     
 
     list_display = ('id','user','created_at')
     
-@admin.register(cartitem )
+@admin.register(Cartitem )
 class cartitemAdmin(admin.ModelAdmin):
 
 
@@ -17,7 +17,7 @@ class cartitemAdmin(admin.ModelAdmin):
     list_filter = ('added_at',)
     ordering = ('added_at',)
 
-@admin.register(order)
+@admin.register(Order)
 class orderAdmin(admin.ModelAdmin):
 
 
