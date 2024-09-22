@@ -1,20 +1,15 @@
-from django.shortcuts import render
 from django.shortcuts import render, redirect
+from .models import Order, Cart, CartItem
 from product.models import Product
-from .models import Order, Cart, Cartitem
+
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 from django.contrib import messages
-import requests
-import json
+from django.conf import settings
 import razorpay
 
-
-
-razorpay_client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-
-
+razorpay_client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, 
+                                        settings.RAZOR_KEY_SECRET))
 
 @login_required
 def initiate_payment(request):
@@ -60,7 +55,7 @@ def callback(request):
         }
         result = razorpay_client.utility.verify_payment_signature(params_dict)
         print(result)
-        if result :
+        if result:
             try:
                 product = Product.objects.get(id=request.session['product_id'])
                 order = Order(
@@ -70,10 +65,10 @@ def callback(request):
                     is_paid = True,
                 )
                 order.save()
-                razorpay_client.payment.capture(payment_id,int( order.product.price*100))
+                razorpay_client.payment.capture(payment_id, int(order.product.price*100))
                 return render(request, 'cart/success.html')
-            except Exception as e:
-                messages.error(request, 'Payment failed')
+            except:
+                messages.error(request, 'Failed to save order')
                 return render(request, 'cart/failure.html')
         else:
             messages.error(request, 'Invalid payment details')
@@ -90,3 +85,53 @@ def failure_view(request):
     order = Order.objects.get(id=request.session['payment_info']['ORDERID'])
     return render(request, 'cart/failure.html', {'order': order})
 
+@login_required
+def view_cart(request):
+    
+    cart = Cart.objects.get(user=request.user)
+    if not cart:
+        return render(request, 'cart/view.html', {'items': []})
+    items = CartItem.objects.filter(cart=cart)
+    return render(request, 'cart/veiw.html', {'items': items})
+
+@login_required
+def add_to_cart(request, id):
+    product = Product.objects.get(id=id)
+    try:
+        cart = Cart.objects.get(user=request.user)
+        print("cart already exists")
+    except:
+        cart = Cart.objects.create(user=request.user)
+        print("new cart created")
+    
+    # if product exists in cart increase the quantity
+    if CartItem.objects.filter(product=product, cart=cart).first():
+        item = CartItem.objects.get(product=product, cart=cart)
+        item.quantity += 1
+        item.save()
+        messages.success(request, 'Product quantity increased')
+    else:
+        item = CartItem.objects.create(product=product, cart=cart)
+        messages.success(request, 'Product added to cart')
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def remove_from_cart(request, id):
+    product = Product.objects.get(id=id)
+    cart = Cart.objects.get(user=request.user)
+    if not cart:
+        return redirect('home')
+    item = CartItem.objects.filter(product=product, cart=cart).first()
+    if item:
+        item.delete()
+        messages.success(request, 'Product removed from cart')
+    return redirect('cart_view')
+    
+
+@login_required
+def cart_checkout(request):
+    pass
+
+@login_required
+def cart_callback(request):
+    pass
